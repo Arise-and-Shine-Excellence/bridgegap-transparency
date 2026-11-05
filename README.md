@@ -98,3 +98,9 @@ docker compose up -d --build
 With `LITESTREAM_REPLICA_URL` set, the container streams every database change to S3-compatible storage (Backblaze B2, Cloudflare R2). On a new host with an empty volume, it restores the latest copy first. Moving hosts means starting the container on the new host with the same Litestream settings and pointing the domain at it.
 
 Put a TLS-terminating proxy (for example Caddy) in front of port 3000.
+
+## Deploy
+
+Every push to `main` builds the Docker image in GitHub Actions ([.github/workflows/docker.yml](.github/workflows/docker.yml)) and publishes it as `ghcr.io/arise-and-shine-excellence/arise-shine`. The server runs [deploy/compose.yml](deploy/compose.yml), where Watchtower checks for a new image every 5 minutes and restarts the app with it. The database stays in the `data` volume.
+
+The server is LXC container 105 (`arise-shine`) on the Proxmox host, with the stack in `/opt/arise-shine` and its settings in `/opt/arise-shine/.env.production`. Nginx Proxy Manager forwards the domain to port 3000.

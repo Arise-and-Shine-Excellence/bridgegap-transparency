@@ -1,0 +1,30 @@
+# Production stack on the server. The image is built by GitHub Actions
+# (.github/workflows/docker.yml); Watchtower pulls new versions every 5 minutes.
+#
+# On the server, in the folder holding this file and .env.production:
+#   docker compose up -d
+services:
+  app:
+    image: ghcr.io/arise-and-shine-excellence/arise-shine:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - data:/data
+    env_file:
+      - .env.production
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_POLL_INTERVAL: "300"
+
+volumes:
+  data:
