@@ -1,0 +1,15 @@
+# Production-style run on one host:
+#   cp .env.example .env.production   # then edit it
+#   docker compose up -d --build
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - data:/data
+    env_file:
+      - .env.production
+volumes:
+  data:

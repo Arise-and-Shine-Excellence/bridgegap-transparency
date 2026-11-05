@@ -116,6 +116,20 @@ Resource needs are small: the smallest VPS tier (around 1 vCPU and 1 GB RAM) is 
 - A native app. A responsive website avoids app store reviews (agreed 2026-10-13).
 - Donor panel, NGO reports, QR scanning, M-PESA or VICOBA integration.
 
+## Implementation notes (November 2026)
+
+The first version follows this proposal, with these choices and differences:
+
+- **i18n is a plain Rust table instead of `leptos_i18n`.** All text is in `src/i18n.rs`, English and Swahili side by side, and the compiler rejects a key that is missing in either language. It's one file with no macros or build step to learn, which suits a developer who doesn't speak Swahili and a future maintainer like Lujo. Language order: the user's choice (cookie), then `DEFAULT_LANG`, then English in debug builds and Swahili in release builds.
+- **Accounts.** Groups have `cash` (TZS), `stock` (products), `raw_materials` and `cost` accounts. ASE has `cash` and `raw_materials`. Three external organisations act as the outside world: Customers, Production (where finished product comes from) and Suppliers. A transfer moves value from its credit account to its debit account, and a balance is debits minus credits.
+- **A production batch is one form.** It records what the group takes from ASE's store and uses up (two transfers per material), what it pays ASE at the fixed material prices, and the finished product into the group's stock. This matches how groups work today: they pay, produce at the site, and take the product home.
+- **Profit** for a month is sales income minus material costs, both read from the ledger through the `sale_view` and `batch_view` views. Alerts: the last batch cost more per unit than the selling price; the month's material costs exceed sales (with the value of unsold stock shown next to it); stock below zero.
+- **Undo** posts mirror-image transfers. Only leaders and ASE admins can undo, and a batch can't be undone once its product has been sold.
+- **Selling more than is in stock is refused**, so stock never goes negative from app entries. Groups with stock from before the app should record it as an opening batch.
+- **Roles.** Members and leaders record production and sales for their own group, and leaders can also undo. ASE admins see every group, manage groups, members and prices, and can record for any group. Viewers can see every group but can't change anything.
+- **Prices other than liquid soap (TSh 2,000/L) are placeholders** in the seed migration. Admins change them in the app, and old prices are kept.
+- **ASE's own stock isn't tracked yet.** Its raw-materials balance goes negative as groups take materials. Recording ASE's purchases from suppliers is the obvious next flow.
+
 ## Open questions
 
 1. **Who maintains the code long term?** Lujo wants to own the code and was leaning toward plain HTML/CSS. Rust and Leptos have a steep learning curve, even with AI coding tools, although the compiler catches many AI mistakes. Agree on this with Lujo before committing to the stack.

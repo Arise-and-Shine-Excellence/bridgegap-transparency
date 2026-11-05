@@ -1,0 +1,8 @@
+# Continuous backup of the SQLite database to S3-compatible storage
+# (Backblaze B2, Cloudflare R2, ...). Credentials come from the environment:
+# LITESTREAM_ACCESS_KEY_ID and LITESTREAM_SECRET_ACCESS_KEY.
+dbs:
+  - path: /data/arise_shine.db
+    replicas:
+      - url: ${LITESTREAM_REPLICA_URL}
+        retention: 720h
