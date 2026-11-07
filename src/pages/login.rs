@@ -12,10 +12,17 @@ pub fn LoginPage() -> impl IntoView {
 
     view! {
         <div class="as-login">
-            <div class="as-login__hero" aria-hidden="true"></div>
+            <header class="as-login__hero">
+                <img class="as-login__sun" src="/patterns/sunflower-large.svg" alt="" width="380" height="380"/>
+                <div><LanguageSwitch hero=true/></div>
+                <div class="as-login__words">
+                    <h1 class="as-display">"Arise and Shine"</h1>
+                    <p class="as-login__tagline">{t.login_intro}</p>
+                </div>
+            </header>
+            <span class="as-kanga" aria-hidden="true"></span>
             <main class="as-login__card">
-                <h1 class="as-display">"Arise and Shine"</h1>
-                <p class="as-muted">{t.login_intro}</p>
+                <h2 class="as-h1">{t.log_in}</h2>
                 <ActionForm action=login attr:class="as-form">
                     <label class="as-field">
                         <span class="as-field__label">{t.phone}</span>
@@ -24,7 +31,7 @@ pub fn LoginPage() -> impl IntoView {
                     </label>
                     <label class="as-field">
                         <span class="as-field__label">{t.pin}</span>
-                        <input class="as-field__input" type="password" name="pin" inputmode="numeric"
+                        <input class="as-field__input as-field__input--pin" type="password" name="pin" inputmode="numeric"
                             autocomplete="current-password" pattern="[0-9]{4,6}" maxlength="6" required/>
                     </label>
                     {move || error().map(|e| view! { <ErrorNote error=e/> })}
@@ -33,7 +40,6 @@ pub fn LoginPage() -> impl IntoView {
                         {move || if login.pending().get() { t.saving } else { t.log_in }}
                     </button>
                 </ActionForm>
-                <LanguageSwitch/>
             </main>
         </div>
     }

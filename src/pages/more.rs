@@ -96,7 +96,7 @@ pub fn PriceTable(list: Vec<PricedAsset>) -> impl IntoView {
 /// Two buttons in a plain form. The server stores the choice in a cookie and
 /// sends the browser back to the same page, now in the chosen language.
 #[component]
-pub fn LanguageSwitch() -> impl IntoView {
+pub fn LanguageSwitch(#[prop(optional)] hero: bool) -> impl IntoView {
     let current = use_lang();
     let button = move |lang: Lang, label: &'static str| {
         view! {
@@ -107,9 +107,9 @@ pub fn LanguageSwitch() -> impl IntoView {
         }
     };
     view! {
-        <form method="post" action=SetLang::url() class="as-seg">
-            {button(Lang::En, "English")}
+        <form method="post" action=SetLang::url() class="as-seg" class:as-seg--hero=hero>
             {button(Lang::Sw, "Kiswahili")}
+            {button(Lang::En, "English")}
         </form>
     }
 }

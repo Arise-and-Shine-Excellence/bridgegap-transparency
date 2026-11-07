@@ -6,7 +6,7 @@ use crate::model::User;
 use leptos::prelude::*;
 use leptos_router::hooks::use_query_map;
 
-/// Line icons, 1.5px stroke with round caps (design system: Iconography).
+/// 24px line icons, 2.2 stroke with round caps (design system: Iconography).
 #[component]
 pub fn Icon(name: &'static str, #[prop(optional)] class: &'static str) -> impl IntoView {
     let paths: &[&str] = match name {
@@ -16,7 +16,7 @@ pub fn Icon(name: &'static str, #[prop(optional)] class: &'static str) -> impl I
             "M10 3v6l-5.6 9.7A1.5 1.5 0 0 0 5.7 21h12.6a1.5 1.5 0 0 0 1.3-2.3L14 9V3",
             "M7.5 15h9",
         ],
-        "sales" => &["M5 8h14l-1 13H6L5 8Z", "M9 8V6a3 3 0 0 1 6 0v2"],
+        "sales" => &["M5 9h14l-1.4 10.2a1 1 0 0 1-1 .8H7.4a1 1 0 0 1-1-.8Z", "M9 9l3-5 3 5"],
         "more" => &["M4 6h16", "M4 12h16", "M4 18h16"],
         "alert" => &["M12 3 2 20h20L12 3Z", "M12 10v4", "M12 17h.01"],
         "check" => &["M5 12.5 10 17l9-10"],
@@ -27,7 +27,7 @@ pub fn Icon(name: &'static str, #[prop(optional)] class: &'static str) -> impl I
     };
     view! {
         <svg class=format!("as-icon {class}") viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d=paths.join(" ")></path>
         </svg>
     }

@@ -11,7 +11,7 @@ use leptos_router::{
     path,
 };
 
-const FONTS: &str = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Instrument+Sans:wght@400..600&display=swap";
+const FONTS: &str = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400..700&display=swap";
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
@@ -41,7 +41,7 @@ pub fn App() -> impl IntoView {
         <Html attr:lang=lang.code()/>
         <Title text="Arise and Shine"/>
         // Same colour as the page, so the phone's status bar blends in.
-        <Meta name="theme-color" content="#fbf5e9"/>
+        <Meta name="theme-color" content="#f3f1ea"/>
         <Meta name="description" content="Arise and Shine bookkeeping"/>
         <Link rel="icon" type_="image/svg+xml" href="/favicon.svg"/>
         // "Add to Home Screen": opens full screen, without the browser's bars.
@@ -143,7 +143,7 @@ fn BottomNav() -> impl IntoView {
                             href=move || with_group(href, group.get())
                             aria-current=move || active().then_some("page")
                         >
-                            <Icon name=icon/>
+                            <span class="as-tabbar__icon"><Icon name=icon/></span>
                             <span>{label}</span>
                         </a>
                     }
