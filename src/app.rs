@@ -2,7 +2,6 @@ use crate::api::get_current_user;
 use crate::components::{use_group, with_group, ErrorNote, Icon, UserResource};
 use crate::error::AppError;
 use crate::i18n::{request_lang, use_t, Lang};
-use crate::model::User;
 use crate::pages::*;
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Html, Link, Meta, MetaTags, Stylesheet, Title};
@@ -41,9 +40,17 @@ pub fn App() -> impl IntoView {
     view! {
         <Html attr:lang=lang.code()/>
         <Title text="Arise and Shine"/>
-        <Meta name="theme-color" content="#f2b705"/>
+        // Same colour as the page, so the phone's status bar blends in.
+        <Meta name="theme-color" content="#fbf5e9"/>
         <Meta name="description" content="Arise and Shine bookkeeping"/>
         <Link rel="icon" type_="image/svg+xml" href="/favicon.svg"/>
+        // "Add to Home Screen": opens full screen, without the browser's bars.
+        <Link rel="manifest" href="/manifest.webmanifest"/>
+        <Link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+        <Meta name="mobile-web-app-capable" content="yes"/>
+        <Meta name="apple-mobile-web-app-capable" content="yes"/>
+        <Meta name="apple-mobile-web-app-title" content="Arise & Shine"/>
+        <Meta name="apple-mobile-web-app-status-bar-style" content="default"/>
         <Link rel="preconnect" href="https://fonts.googleapis.com"/>
         <Link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
         <Link rel="stylesheet" href=FONTS/>
@@ -65,7 +72,8 @@ pub fn App() -> impl IntoView {
     }
 }
 
-/// Everything behind login: the page and the bottom menu bar.
+/// Everything behind login: the page and the bottom menu bar. No top bar,
+/// so it feels like an installed app; the page title says where you are.
 ///
 /// Data resources must be created at the top of a component, never inside a
 /// `Suspend` block: the server may run a `Suspend` block more than once, and
@@ -75,12 +83,22 @@ pub fn App() -> impl IntoView {
 fn AppLayout() -> impl IntoView {
     let user: UserResource = Resource::new(|| (), |_| get_current_user());
     provide_context(user);
+    // `.as-app` scrolls, not the page (see main.css), so the router's own
+    // scroll-to-top does not reach it. Do it here on every page change.
+    let scroller = NodeRef::<leptos::html::Div>::new();
+    let location = use_location();
+    Effect::new(move |_| {
+        location.pathname.track();
+        if let Some(el) = scroller.get_untracked() {
+            el.set_scroll_top(0);
+        }
+    });
     view! {
-        <div class="as-app">
+        <div class="as-app" node_ref=scroller>
             <Suspense fallback=|| ()>
                 {move || Suspend::new(async move {
                     match user.await {
-                        Ok(Some(user)) => view! { <TopBar user=user/> }.into_any(),
+                        Ok(Some(_)) => ().into_any(),
                         Ok(None) | Err(AppError::NotLoggedIn) => view! { <Redirect path="/login"/> }.into_any(),
                         Err(e) => view! { <ErrorNote error=e/> }.into_any(),
                     }
@@ -91,20 +109,6 @@ fn AppLayout() -> impl IntoView {
             </main>
             <BottomNav/>
         </div>
-    }
-}
-
-#[component]
-fn TopBar(user: User) -> impl IntoView {
-    view! {
-        <header class="as-topbar">
-            <a class="as-brand" href="/">
-                <img src="/patterns/sunflower-motif.svg" alt="" width="28" height="28"/>
-                <span>"Arise and Shine"</span>
-            </a>
-            <span class="as-topbar__org">{user.organisation_name}</span>
-        </header>
-        <div class="as-band" aria-hidden="true"></div>
     }
 }
 
